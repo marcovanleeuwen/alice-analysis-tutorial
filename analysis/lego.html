@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Step 2 - Running the task · ALICE Analysis Tutorial</title>
+        <title>The LEGO train system · ALICE Analysis Tutorial</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -65,10 +65,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="modify.html" />
+    <link rel="next" href="monalisa.html" />
     
     
-    <link rel="prev" href="setup.html" />
+    <link rel="prev" href="rungrid.html" />
     
 
     </head>
@@ -350,7 +350,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.5" data-path="lego.html">
+        <li class="chapter active" data-level="1.4.5" data-path="lego.html">
             
                 <a href="lego.html">
             
@@ -460,7 +460,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.5.2" data-path="running.html">
+        <li class="chapter " data-level="1.5.2" data-path="running.html">
             
                 <a href="running.html">
             
@@ -761,7 +761,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Step 2 - Running the task</a>
+        <a href=".." >The LEGO train system</a>
     </h1>
 </div>
 
@@ -776,47 +776,52 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="step-2---running-the-task">Step 2 - Running the task</h1>
-<p>It is now time to run this simple analysis. To run the task, make sure that the ALICE environment is (still) sourced, and type</p>
-<pre><code>$ aliroot runAnalysis.C
-</code></pre><p>in the folder where you have stored the analysis code. This command launches aliroot (the ALICE extension of the ROOT data analysis framework), and executes the macro &#x2019;runAnalysis.C&#x2019;. The macro will</p>
+                                <h1 id="the-lego-train-system">The LEGO train system</h1>
+<p>By now, your code is running well on Grid, you&apos;re submitting and merging jobs like a seasoned professional. However, do you really want to </p>
 <ul>
-<li><p>compile your analysis code</p>
-</li>
-<li><p>add your analysis task to the analysis manager</p>
-</li>
-<li><p>run the analysis over the input data file that you have provided</p>
-</li>
+<li>Stay up all night to resubmit jobs? </li>
+<li>Risk losing your code because it&apos;s not part of AliPhysics and your hard drive crashes? </li>
 </ul>
-<p>As the code starts running, the analysis manager prints some information to your screen, e.g.</p>
-<pre><code>______________________________________________________________________________
-   task: name  ACTIVE=0 POST_LOOP=0
-      INPUT #0: TChain &lt;-  [cAUTO_INPUT]
-      OUTPUT #0: TTree -&gt;  [NO CONTAINER]
-      OUTPUT #1: TList -&gt;  [MyOutputContainer]
-      Container: MyOutputContainer     DATA TYPE: TList
-       = Filename: AnalysisResults.root  folder: MyTask
-I-AliAnalysisManager::SetUseProgressBar: Progress bar enabled, updated every 25 events.
-  ### NOTE: Debug level reset to 0 ###
-(class TClass*)0x37637e0
-===== RUNNING LOCAL ANALYSIS AnalysisTaskExample ON TREE aodTree
-(class TClass*)0x37637e0
-Initialization time: 2.69299 [sec]
-E-AliAnalysisManager::GetRunFromAlienPath: Invalid AliEn path string
-I-AliAODInputHandler::Notify: Moving to file AliAOD.root
-Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
-</code></pre><p>This information is useful: you can see what kind of input and output your job is digesting - and, when something is wrong, you will get detailed information on <em>what</em> is going wrong.  </p>
-<h2 id="caveats">Caveats</h2>
-<p>Make sure though, that the macro &#x2019;knows&#x2019; where you stored the AliAOD.root file on your laptop (if the AliAOD.root file is in a different folder than the analysis source code, open the runAnalysis.C file, and change the lines where the input file is accessed, just search for <em>AliAOD.root</em> ).</p>
-<p>By default, the macro will run the task just on your laptop. Later on, we&#x2019;ll see how you can run your analysis on Grid.</p>
-<p>There are some difference between interaction with ROOT5 and ROOT6; a quick ROOT5 to ROOT6 guide <a href="https://alice-doc.github.io/alice-analysis-tutorial/analysis/ROOT5-to-6.html" target="_blank">can be found here</a>.</p>
-<h1 id="take-a-look-at-the-output">Take a look at the output</h1>
-<p>If all goes well, your simple task runs over the input data, and fills one histogram with the distribution of transverse momentum of all charged particle tracks in all events. </p>
-<p>Once the task is done running, take a look at the outputfile </p>
-<pre><code>AnalysisResults.root
-</code></pre><p> that your analysis has generated. The easiest way to do so is to open a TBrowser (ROOT&#x2019;s &#x2019;graphical user interface&#x2019;) while you are in (ali)root </p>
-<pre><code>new TBrowser
-</code></pre><p>and take a look at the distribution in the histogram. No idea how to use a TBrowser, or what a TBrowser even is? Don&#x2019;t hesitate to ask, and take a look at the <a href="https://root.cern.ch/root/htmldoc/guides/users-guide/ROOTUsersGuide.html" target="_blank">ROOT user&#x2019;s guide</a>.</p>
+<p>To avoid these headaches, users are encouraged to run their jobs in a more automated and efficient way by using the LEGO framework. </p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(8311353622);" id="why-lego-trains-are-crucial"><i class="fa fa-info-circle"></i> Why LEGO trains are crucial<span id="heading-8311353622"></span></h3></div><div class="panel-body" id="panel-8311353622"><p>A train can easily contain multiple instances of your analysis, meaning you can run your default configuration and in addition multiple cut variations and other cross-checks. The success rate of the jobs is EXACTLY the same for each of your configurations, as they are all handled in parallel. This means that the all the configurations handle the exact same set of data.</p>
+<p>This is in contrast to submitting your jobs one after each other (possibly running into quota problems) and having random job crashes, resulting in a situation where your default configuration and the variations did not handle exactly the same set of data.</p>
+</div></div></p>
+<h2 id="how-does-it-work">How does it work</h2>
+<p>The LEGO framework is a tool to run and manage analysis trains on AliEn. It builds on existing infrastructure, the analysis framework, MonALISA and LPM. LEGO provides a web interface for users and operators which allows to:</p>
+<ul>
+<li>register train wagons</li>
+<li>configure trains (handlers, wagons, input datasets, global Variables)</li>
+<li>test the wagons and the train in a well-defined environment</li>
+<li>study the test results</li>
+<li>submit the train to the Grid</li>
+<li>study the resource consumption of the train for each wagon (CPU usage, virtual and resident memory) </li>
+</ul>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(4511026370);" id="note"><i class="fa fa-info-circle"></i> Note<span id="heading-4511026370"></span></h3></div><div class="panel-body" id="panel-4511026370"><p>The fact that the trains run on the Grid, requires that all code is contained in an AliEn package. Therefore, the train uses the regularly deployed AliPhysics &quot;AN&quot; tags, so you will have to make sure that your analysis code is available in AliPhysics. </p>
+<p>Within AliPhysics, your analysis code will be part of a shared library that contains many other analyses from your working group or analysis group. If you have never added a class to AliPhysics, ask your PWG or PAG coordinators for help.</p>
+</div></div></p>
+<h2 id="how-to-access-the-lego-train-system">How to access the LEGO train system</h2>
+<p>The LEGO train system can be accessed via (<a href="https://alimonitor.cern.ch/trains/" target="_blank">https://alimonitor.cern.ch/trains/</a>)</p>
+<p><img src="figures/d2.png" alt="image"></p>
+<p>By clicking on the top right &apos;help&apos; tab, you will be guided to a webpage where it is explained in detail how you can join a LEGO train and perform a highly efficient analysis. </p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(2361155281);" id="join-the-lego-trains"><i class="fa fa-info-circle"></i> Join the LEGO trains!<span id="heading-2361155281"></span></h3></div><div class="panel-body" id="panel-2361155281"><p>Everyone is encouraged to use the LEGO train system for running analysis rather than running analysis by yourself on Grid. Not only will you benefit yourself, but by running trains that contain analyses of multiple users in one go, we conserve resources: the LEGO train has to only run on instance of AliPhysics to perform multiple analyses, and it has to only retrieve the input data once. </p>
+<p>As a consequence: LEGO train jobs have <em>higher priority</em> in the job queues than user jobs! Furthermore, your analysis will always be reproducible, and you will receive a simple mail with a link to your final output file when your train run is done. So if you want to perform fast, safe, and efficient analysis: use the LEGO trains!</p>
+</div></div></p>
+<h2 id="how-to-add-your-analysis-task-to-the-lego-train-system">How to add your analysis task to the LEGO train system</h2>
+<p>As seen in the screenshot above, the train pages are grouped by PWG, collision system, and AOD or ESD data processing. Once you are in the correct train page:</p>
+<ul>
+<li>Click <strong>Add new wagon</strong></li>
+<li>Configure the wagon by either setting it up from scratch, or copying it from an existing wagon(available under advanced settings, and allows in addition to not only copy your own wagons, but also from any other user!)</li>
+<li>Check that your macro is defined and configured correctly in the basic settings tab</li>
+<li>Check the dependencies (if your dependency is not available you can just create another wagon and configure it accordingly then define it as a dependency for your own wagon)</li>
+<li>Use a unique filename for your wagon</li>
+<li>Expert mode: Add subwagons (easiest way to run multiple analysis with a single wagon)</li>
+<li>Activate your wagon for the dataset you want to process (if it is not available, ask an operator to add it)</li>
+<li>Check the runlist of the dataset! (Do not blindly use the runlists which happen to be there, make sure proper QA is done such that only high quality runs are used for your analysis)</li>
+<li>Ask the train operators to start a train test for your activated wagons (each PAG and/or PWG has a different system, please ask the coordinators)</li>
+<li>Check that the train test output is successful and take responsibility in debugging if there are problems</li>
+<li>If all is ok, confirm with the train operator that the train can be started</li>
+</ul>
+<p>This seems to be quite a long list, but once your wagons are set up it takes only a few minutes to get your analyses on the grid. You just need to wait for the email to announcing the completion of the run.</p>
 
                                 
                                 </section>
@@ -844,12 +849,12 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
 
             
                 
-                <a href="setup.html" class="navigation navigation-prev " aria-label="Previous page: Step 1 - Setup the tutorial">
+                <a href="rungrid.html" class="navigation navigation-prev " aria-label="Previous page: Running on Grid">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="modify.html" class="navigation navigation-next " aria-label="Next page: Step 3 - Modify the task">
+                <a href="monalisa.html" class="navigation navigation-next " aria-label="Next page: AliMonitor">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -860,7 +865,7 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Step 2 - Running the task","level":"1.5.2","depth":2,"next":{"title":"Step 3 - Modify the task","level":"1.5.3","depth":2,"path":"analysis/modify.md","ref":"analysis/modify.md","articles":[]},"previous":{"title":"Step 1 - Setup the tutorial","level":"1.5.1","depth":2,"path":"analysis/setup.md","ref":"analysis/setup.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/running.md","mtime":"2020-09-29T14:25:36.192Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"The LEGO train system","level":"1.4.5","depth":2,"next":{"title":"AliMonitor","level":"1.4.6","depth":2,"path":"analysis/monalisa.md","ref":"analysis/monalisa.md","articles":[]},"previous":{"title":"Running on Grid","level":"1.4.4","depth":2,"path":"analysis/rungrid.md","ref":"analysis/rungrid.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/lego.md","mtime":"2020-09-29T14:25:36.192Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

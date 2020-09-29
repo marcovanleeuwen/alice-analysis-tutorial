@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Step 2 - Running the task · ALICE Analysis Tutorial</title>
+        <title>Offline analysis database · ALICE Analysis Tutorial</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -65,10 +65,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="modify.html" />
+    <link rel="next" href="trouble.html" />
     
     
-    <link rel="prev" href="setup.html" />
+    <link rel="prev" href="monalisa.html" />
     
 
     </head>
@@ -376,7 +376,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.7" data-path="oadb.html">
+        <li class="chapter active" data-level="1.4.7" data-path="oadb.html">
             
                 <a href="oadb.html">
             
@@ -460,7 +460,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.5.2" data-path="running.html">
+        <li class="chapter " data-level="1.5.2" data-path="running.html">
             
                 <a href="running.html">
             
@@ -761,7 +761,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Step 2 - Running the task</a>
+        <a href=".." >Offline analysis database</a>
     </h1>
 </div>
 
@@ -776,47 +776,69 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="step-2---running-the-task">Step 2 - Running the task</h1>
-<p>It is now time to run this simple analysis. To run the task, make sure that the ALICE environment is (still) sourced, and type</p>
-<pre><code>$ aliroot runAnalysis.C
-</code></pre><p>in the folder where you have stored the analysis code. This command launches aliroot (the ALICE extension of the ROOT data analysis framework), and executes the macro &#x2019;runAnalysis.C&#x2019;. The macro will</p>
-<ul>
-<li><p>compile your analysis code</p>
-</li>
-<li><p>add your analysis task to the analysis manager</p>
-</li>
-<li><p>run the analysis over the input data file that you have provided</p>
-</li>
-</ul>
-<p>As the code starts running, the analysis manager prints some information to your screen, e.g.</p>
-<pre><code>______________________________________________________________________________
-   task: name  ACTIVE=0 POST_LOOP=0
-      INPUT #0: TChain &lt;-  [cAUTO_INPUT]
-      OUTPUT #0: TTree -&gt;  [NO CONTAINER]
-      OUTPUT #1: TList -&gt;  [MyOutputContainer]
-      Container: MyOutputContainer     DATA TYPE: TList
-       = Filename: AnalysisResults.root  folder: MyTask
-I-AliAnalysisManager::SetUseProgressBar: Progress bar enabled, updated every 25 events.
-  ### NOTE: Debug level reset to 0 ###
-(class TClass*)0x37637e0
-===== RUNNING LOCAL ANALYSIS AnalysisTaskExample ON TREE aodTree
-(class TClass*)0x37637e0
-Initialization time: 2.69299 [sec]
-E-AliAnalysisManager::GetRunFromAlienPath: Invalid AliEn path string
-I-AliAODInputHandler::Notify: Moving to file AliAOD.root
-Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
-</code></pre><p>This information is useful: you can see what kind of input and output your job is digesting - and, when something is wrong, you will get detailed information on <em>what</em> is going wrong.  </p>
-<h2 id="caveats">Caveats</h2>
-<p>Make sure though, that the macro &#x2019;knows&#x2019; where you stored the AliAOD.root file on your laptop (if the AliAOD.root file is in a different folder than the analysis source code, open the runAnalysis.C file, and change the lines where the input file is accessed, just search for <em>AliAOD.root</em> ).</p>
-<p>By default, the macro will run the task just on your laptop. Later on, we&#x2019;ll see how you can run your analysis on Grid.</p>
-<p>There are some difference between interaction with ROOT5 and ROOT6; a quick ROOT5 to ROOT6 guide <a href="https://alice-doc.github.io/alice-analysis-tutorial/analysis/ROOT5-to-6.html" target="_blank">can be found here</a>.</p>
-<h1 id="take-a-look-at-the-output">Take a look at the output</h1>
-<p>If all goes well, your simple task runs over the input data, and fills one histogram with the distribution of transverse momentum of all charged particle tracks in all events. </p>
-<p>Once the task is done running, take a look at the outputfile </p>
-<pre><code>AnalysisResults.root
-</code></pre><p> that your analysis has generated. The easiest way to do so is to open a TBrowser (ROOT&#x2019;s &#x2019;graphical user interface&#x2019;) while you are in (ali)root </p>
-<pre><code>new TBrowser
-</code></pre><p>and take a look at the distribution in the histogram. No idea how to use a TBrowser, or what a TBrowser even is? Don&#x2019;t hesitate to ask, and take a look at the <a href="https://root.cern.ch/root/htmldoc/guides/users-guide/ROOTUsersGuide.html" target="_blank">ROOT user&#x2019;s guide</a>.</p>
+                                <h2 id="oadb-and-large-shared-files">OADB and large shared files</h2>
+<p>The Offline Analysis Database (OADB) is a repository of relatively large configuration/calibration files that are used by the analysis framework, 
+containing for example the &apos;TPC splines&apos; with the parametrised dE/dx response of the TPC and calibration files for event plane calculation.
+The data are generally stored in ROOT files, and the primary repository is on the CERN EOS file system, which is accessible from lxplus:</p>
+<pre><code>/eos/experiment/alice/analysis-data
+</code></pre><p>We have preserved the same directory structure found on AliPhysics, and the
+same permissions: for instance, <code>PWGLF</code> is writable by all members of
+<code>alice-svn-pwglf</code> (whose members can be edited by the group conveners).</p>
+<p>Every day, in concomitance with the AliPhysics daily tag (at 4pm Geneva time),
+this folder is snapshotted on CVMFS under the following path:</p>
+<pre><code>/cvmfs/alice.cern.ch/data/analysis/YYYY/vAN-YYYYMMDD
+</code></pre><p>carrying the same name as the corresponding AliPhysics tag. Moreover, at
+every AliRoot/AliPhysics production release, we also snapshot at:</p>
+<pre><code>/cvmfs/alice.cern.ch/data/prod/v5-XX-YY-01
+</code></pre><p>where the last component is the AliPhysics tag name.</p>
+<p>CVMFS brings the advantage to make data access from Grid jobs reliable and
+faster due to caching (files unchanged in two different snapshots are not
+downloaded twice).</p>
+<p>In order to profit from the separate storage for large files we have created an
+interface in AliRoot to allow transparent access to OADB files using a relative
+path. For instance, if you want to access the following large OADB data file:</p>
+<pre><code>PWGLF/FORWARD/CORRECTIONS/data/fmd_corrections.root
+</code></pre><p>you can do:</p>
+<pre><code class="lang-cpp">TFile::Open(AliDataFile::GetFileNameOADB(<span class="hljs-string">&quot;PWGLF/FORWARD/CORRECTIONS/data/fmd_corrections.root&quot;</span>))
+</code></pre>
+<p>The static function <code>AliDataFile::GetFileNameOADB</code> returns the first accessible
+full URL of the OADB file by finding the first match from the following ordered
+list of paths:</p>
+<ol>
+<li><code>$OADB_PATH/&lt;file&gt;</code></li>
+<li><code>$ALICE_DATA/OADB/&lt;file&gt;</code></li>
+<li><code>$ALICE_PHYSICS/OADB/&lt;file&gt;</code></li>
+<li><code>/cvmfs/alice.cern.ch/data/prod/v5-XX-YY-01/OADB/&lt;file&gt;</code> (for Grid jobs, or with CVMFS installed)</li>
+<li><code>/cvmfs/alice.cern.ch/data/analysis/YYYY/vAN-YYYYMMDD/OADB/&lt;file&gt;</code> (for Grid jobs, or with CVMFS installed)</li>
+<li><code>root://eospublic.cern.ch//eos/experiment/alice/analysis-data/OADB/&lt;file&gt;</code></li>
+</ol>
+<p>This means that for laptop analysis it will always be possible to access data
+files, somehow, and in a transparent fashion. If you want to have your OADB
+data locally, you can download it from lxplus:</p>
+<pre><code class="lang-bash"><span class="hljs-built_in">export</span> OADB_PATH=/path/to/my/<span class="hljs-built_in">local</span>/oadb
+rsync -av --delete cern_user@lxplus.cern.ch:/eos/experiment/alice/analysis-data/ <span class="hljs-variable">$OADB_PATH</span>/
+</code></pre>
+<blockquote>
+<p>Trailing slashes are important to rsync! Do not forget them!</p>
+</blockquote>
+<p>Note that the variable <code>$OADB_PATH</code> must be exported to the environment where
+you run your local analysis in order to make it visible to the job.</p>
+<h3 id="non-oadb-data-files">Non-OADB data files</h3>
+<p>The same EOS path has also PWG-specific directories, outside the OADB one, for
+other analysis-specific data. The following interface can be used to access
+files from there:</p>
+<pre><code class="lang-cpp">TFile::Open(AliDataFile::GetFileName(<span class="hljs-string">&quot;PWGMM/my_large_data.root&quot;</span>))
+</code></pre>
+<blockquote>
+<p>Note the difference between <code>GetFileName()</code> and <code>GetFileNameOADB()</code>.</p>
+</blockquote>
+<p>In this case, the file will be searched in the following locations in order:</p>
+<ol>
+<li><code>$ALICE_DATA/&lt;file&gt;</code></li>
+<li><code>$ALICE_PHYSICS/&lt;file&gt;</code></li>
+<li><code>/cvmfs/alice.cern.ch/data/prod/v5-XX-YY-01/&lt;file&gt;</code> (for Grid jobs, or with CVMFS installed)</li>
+<li><code>/cvmfs/alice.cern.ch/data/analysis/YYYY/vAN-YYYYMMDD/&lt;file&gt;</code> (for Grid jobs, or with CVMFS installed)</li>
+</ol>
 
                                 
                                 </section>
@@ -844,12 +866,12 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
 
             
                 
-                <a href="setup.html" class="navigation navigation-prev " aria-label="Previous page: Step 1 - Setup the tutorial">
+                <a href="monalisa.html" class="navigation navigation-prev " aria-label="Previous page: AliMonitor">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="modify.html" class="navigation navigation-next " aria-label="Next page: Step 3 - Modify the task">
+                <a href="trouble.html" class="navigation navigation-next " aria-label="Next page: Troubleshooting">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -860,7 +882,7 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Step 2 - Running the task","level":"1.5.2","depth":2,"next":{"title":"Step 3 - Modify the task","level":"1.5.3","depth":2,"path":"analysis/modify.md","ref":"analysis/modify.md","articles":[]},"previous":{"title":"Step 1 - Setup the tutorial","level":"1.5.1","depth":2,"path":"analysis/setup.md","ref":"analysis/setup.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/running.md","mtime":"2020-09-29T14:25:36.192Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Offline analysis database","level":"1.4.7","depth":2,"next":{"title":"Troubleshooting","level":"1.4.8","depth":2,"path":"analysis/trouble.md","ref":"analysis/trouble.md","articles":[]},"previous":{"title":"AliMonitor","level":"1.4.6","depth":2,"path":"analysis/monalisa.md","ref":"analysis/monalisa.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/oadb.md","mtime":"2020-09-29T14:25:36.192Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

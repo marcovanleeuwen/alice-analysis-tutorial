@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Step 2 - Running the task · ALICE Analysis Tutorial</title>
+        <title>Troubleshooting · ALICE Analysis Tutorial</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -65,10 +65,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="modify.html" />
+    <link rel="next" href="streamer.html" />
     
     
-    <link rel="prev" href="setup.html" />
+    <link rel="prev" href="oadb.html" />
     
 
     </head>
@@ -389,7 +389,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.8" data-path="trouble.html">
+        <li class="chapter active" data-level="1.4.8" data-path="trouble.html">
             
                 <a href="trouble.html">
             
@@ -460,7 +460,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.5.2" data-path="running.html">
+        <li class="chapter " data-level="1.5.2" data-path="running.html">
             
                 <a href="running.html">
             
@@ -761,7 +761,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Step 2 - Running the task</a>
+        <a href=".." >Troubleshooting</a>
     </h1>
 </div>
 
@@ -776,47 +776,97 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="step-2---running-the-task">Step 2 - Running the task</h1>
-<p>It is now time to run this simple analysis. To run the task, make sure that the ALICE environment is (still) sourced, and type</p>
-<pre><code>$ aliroot runAnalysis.C
-</code></pre><p>in the folder where you have stored the analysis code. This command launches aliroot (the ALICE extension of the ROOT data analysis framework), and executes the macro &#x2019;runAnalysis.C&#x2019;. The macro will</p>
+                                <h1 id="troubleshooting---when-grid-does-not-do-what-you-want-it-to-do">Troubleshooting - when Grid does not do what you want it to do</h1>
+<p>Sometimes, running jobs does not go as smoothly as you would like it to go. In this section, we will cover some basic troubleshooting. </p>
+<h2 id="first-off-all-be-informed">First off all: be informed!</h2>
+<p>Grid operations are complex. Often, job failures are a result of mistakes of users, but sometimes, certain Grid sites experience general problems. To quickly resolve these problems, it is important that we clearly communicate problems. To do so, ALICE makes extensive use of mailing lists. You can self-subscribe to mailing lists pertaining to Grid operations by surfing to <strong>e-groups.cern.ch</strong> . There, make sure that you are subscribed to</p>
 <ul>
-<li><p>compile your analysis code</p>
-</li>
-<li><p>add your analysis task to the analysis manager</p>
-</li>
-<li><p>run the analysis over the input data file that you have provided</p>
-</li>
+<li>alice-analysis-operations</li>
+<li>alice-project-analysis-task-force</li>
+<li>your PAG&#x2019;s mailing list</li>
 </ul>
-<p>As the code starts running, the analysis manager prints some information to your screen, e.g.</p>
-<pre><code>______________________________________________________________________________
-   task: name  ACTIVE=0 POST_LOOP=0
-      INPUT #0: TChain &lt;-  [cAUTO_INPUT]
-      OUTPUT #0: TTree -&gt;  [NO CONTAINER]
-      OUTPUT #1: TList -&gt;  [MyOutputContainer]
-      Container: MyOutputContainer     DATA TYPE: TList
-       = Filename: AnalysisResults.root  folder: MyTask
-I-AliAnalysisManager::SetUseProgressBar: Progress bar enabled, updated every 25 events.
-  ### NOTE: Debug level reset to 0 ###
-(class TClass*)0x37637e0
-===== RUNNING LOCAL ANALYSIS AnalysisTaskExample ON TREE aodTree
-(class TClass*)0x37637e0
-Initialization time: 2.69299 [sec]
-E-AliAnalysisManager::GetRunFromAlienPath: Invalid AliEn path string
-I-AliAODInputHandler::Notify: Moving to file AliAOD.root
-Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
-</code></pre><p>This information is useful: you can see what kind of input and output your job is digesting - and, when something is wrong, you will get detailed information on <em>what</em> is going wrong.  </p>
-<h2 id="caveats">Caveats</h2>
-<p>Make sure though, that the macro &#x2019;knows&#x2019; where you stored the AliAOD.root file on your laptop (if the AliAOD.root file is in a different folder than the analysis source code, open the runAnalysis.C file, and change the lines where the input file is accessed, just search for <em>AliAOD.root</em> ).</p>
-<p>By default, the macro will run the task just on your laptop. Later on, we&#x2019;ll see how you can run your analysis on Grid.</p>
-<p>There are some difference between interaction with ROOT5 and ROOT6; a quick ROOT5 to ROOT6 guide <a href="https://alice-doc.github.io/alice-analysis-tutorial/analysis/ROOT5-to-6.html" target="_blank">can be found here</a>.</p>
-<h1 id="take-a-look-at-the-output">Take a look at the output</h1>
-<p>If all goes well, your simple task runs over the input data, and fills one histogram with the distribution of transverse momentum of all charged particle tracks in all events. </p>
-<p>Once the task is done running, take a look at the outputfile </p>
-<pre><code>AnalysisResults.root
-</code></pre><p> that your analysis has generated. The easiest way to do so is to open a TBrowser (ROOT&#x2019;s &#x2019;graphical user interface&#x2019;) while you are in (ali)root </p>
-<pre><code>new TBrowser
-</code></pre><p>and take a look at the distribution in the histogram. No idea how to use a TBrowser, or what a TBrowser even is? Don&#x2019;t hesitate to ask, and take a look at the <a href="https://root.cern.ch/root/htmldoc/guides/users-guide/ROOTUsersGuide.html" target="_blank">ROOT user&#x2019;s guide</a>.</p>
+<p>ALICE also employes a more professional bug and feature tracking suite, called <em>JIRA</em>, which you can access via</p>
+<ul>
+<li><a href="https://alice.its.cern.ch/jira/projects/ALPHY" target="_blank">https://alice.its.cern.ch/jira/projects/ALPHY</a></li>
+</ul>
+<h2 id="troubleshooting-101---what-should-you-do">Troubleshooting 101 - what should you do?</h2>
+<p>Sometimes, you will see mails such as</p>
+<pre><code>            `Dear experts,
+        All my jobs are going into error. 
+            Could you check? Thanks!&apos;
+</code></pre><p>being sent to the mailing lists. The experts <strong>can</strong> (and probably will) check, but you yourself should
+be the <strong>first</strong> to take a look at why your job is not doing what you want it to do. The starting point is</p>
+<ul>
+<li>Go to &#x2018;<strong>my jobs</strong>&#x2019; on MonaLISA</li>
+<li>Take a look at the job <strong>trace</strong> and, if available, the <strong>stderr</strong>
+and <strong>stdout</strong></li>
+</ul>
+<p>The trace tells you exactly how your job was handled, from copying of files to Grid nodes, to executing the job, to checking if the expected output files were actually created. Stdout and stderr are the standard handles for the normal information and error information. Depending on whether or not the process actually ran, these files may or may not be available. </p>
+<p>If you have checked your job&apos;s trace, stdout and stderr, and still cannot solve an issue, it is completely fine to write a mail to the mailing list. However, be <em>complete</em> in your message, specify <em>what</em> goes wrong, and provide some examples of <em>job numbers</em>. Do not kill your jobs! If the jobs are purged from the queue, debug information is lost. </p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(1650169160);" id="debugging-101"><i class="fa fa-info-circle"></i> Debugging 101<span id="heading-1650169160"></span></h3></div><div class="panel-body" id="panel-1650169160"><p>Heads-up: excellent <strong>actual debugging</strong> documentation is available at</p>
+<ul>
+<li><a href="https://dberzano.github.io/alice/debug/" target="_blank">https://dberzano.github.io/alice/debug/</a></li>
+</ul>
+</div></div></p>
+<h3 id="example-validation-error">Example: validation error</h3>
+<p>Let&apos;s take a look at an example of troubleshooting. We have some jobs running, and check their progress on MonALISA. Unfortunately, we see that <em>all</em> of our subjobs, corresponding to a given masterjob, go into the error state &apos;Validation error&apos;
+<img src="figures/a3.png" alt="image"></p>
+<p>The first thing to do, is click on the masterjob number, to get a detailed overview of the subjobs. This table allows us access to the trace and log files
+<img src="figures/b3.png" alt="image"></p>
+<p>Clicking on &apos;log files&apos; leads us to a page where we can consult the log files
+<img src="figures/c3.png" alt="image"></p>
+<p>and by e.g. clicking on the &apos;stderr&apos;, we can check the error information of our job. 
+<img src="figures/d3.png" alt="image"></p>
+<p>Mmm, so the job crashed with a segmentation violation, and if we remember correctly from our programming classes, we know that this points at illegal memory access ... so we had better go to our analysis code, and check our pointers ....</p>
+<p><div class="panel panel-success"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(4358089343);" id="can-you-spot-the-mistake-"><i class="fa fa-square-o"></i> Can you spot the mistake? <span id="heading-4358089343"></span></h3></div><div class="panel-body" id="panel-4358089343"><p>Below, we see the <code>UserCreateOutputObjects</code> and a snippet of the <code>UserExec()</code> methods of the task that ran and segfaulted. What is wrong ? </p>
+<pre><code class="lang-cpp">    AliAnalysisTaskMyTask::UserCreateOutputObjects()
+    {
+        <span class="hljs-comment">// create a new TList that OWNS its objects</span>
+        fOutputList = <span class="hljs-keyword">new</span> TList();
+        fOutputList-&gt;SetOwner(kTRUE);
+        <span class="hljs-comment">// add the list to our output file</span>
+        PostData(<span class="hljs-number">1</span>,fOutputList);
+    }
+       ...
+    AliAnalysisTaskMyTask::UserExec() {
+       <span class="hljs-comment">// called for each event</span>
+       ...
+       fHistPt-&gt;Fill(track-&gt;Pt());
+</code></pre>
+<div class="panel panel-danger"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(4438709263);" id="-click-to-show-answerclick-to-expand"><i class="fa fa-line-chart"></i>  Click to show answer<span id="heading-4438709263">Click to expand</span></h3></div><div class="panel-body" style="display: none" id="panel-4438709263"><p>We forgot to initialize the histogram that we try to fill: the pointer <code>fHistPt</code> has value NULL</p>
+</div></div></div></div></p>
+<h2 id="example-execution-error">Example: execution error</h2>
+<p>Let&apos;s take a look at another example. We are again running our jobs, but now we notice that subjobs of a given masterjob start to go into an &apos;Execution error&apos; state. </p>
+<p><img src="figures/e3.png" alt="image"></p>
+<p>Again, after clicking on the masterjob ID, the popup window of subjobs opens. If we hover with the mouse over the ID of a certain subjob, an graph of memory usage over time is shown. In this particular case, we clearly see that memory usage increases linearly over time</p>
+<p><img src="figures/f3.png" alt="image"></p>
+<p>Let&apos;s click on the trace of the subjob
+<img src="figures/g3.png" alt="image"></p>
+<p>From the trace, we see that the job was killed because it used too much memory. The fact that we saw that the memory consumption increased linearly over time, probably means that there is a memory leak somewhere in our code ... better go back to the drawing board. </p>
+<h2 id="what-is-the-perfect-workflow">What is the perfect workflow?</h2>
+<p>By now, we have seen that we can run our analysis</p>
+<ul>
+<li>locally, on some data on our laptop</li>
+<li>on Grid, either in test mode or full mode</li>
+<li>on the LEGO trains</li>
+</ul>
+<p>Even though there is <strong>no</strong> perfect workflow, it is generally wise to</p>
+<ul>
+<li>Download some AliAOD.root files to your computer</li>
+<li>Develop your task</li>
+<li>Test locally (fast, no internet connection needed)</li>
+</ul>
+<p>When this goes well</p>
+<ul>
+<li>Check in &#x2018;test&#x2019; grid mode. There are a few subtle differences
+between running LOCALLY and on GRID (covered in the next section)</li>
+</ul>
+<p>If the code is robust:</p>
+<ul>
+<li>Don&#x2019;t spend long nights (re)submitting jobs to GRID ...</li>
+<li>... rather get your code checked into AliPhysics</li>
+<li><strong>And use the LEGO trains</strong></li>
+</ul>
 
                                 
                                 </section>
@@ -844,12 +894,12 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
 
             
                 
-                <a href="setup.html" class="navigation navigation-prev " aria-label="Previous page: Step 1 - Setup the tutorial">
+                <a href="oadb.html" class="navigation navigation-prev " aria-label="Previous page: Offline analysis database">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="modify.html" class="navigation navigation-next " aria-label="Next page: Step 3 - Modify the task">
+                <a href="streamer.html" class="navigation navigation-next " aria-label="Next page: The ROOT streamer">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -860,7 +910,7 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Step 2 - Running the task","level":"1.5.2","depth":2,"next":{"title":"Step 3 - Modify the task","level":"1.5.3","depth":2,"path":"analysis/modify.md","ref":"analysis/modify.md","articles":[]},"previous":{"title":"Step 1 - Setup the tutorial","level":"1.5.1","depth":2,"path":"analysis/setup.md","ref":"analysis/setup.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/running.md","mtime":"2020-09-29T14:25:36.192Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Troubleshooting","level":"1.4.8","depth":2,"next":{"title":"The ROOT streamer","level":"1.4.9","depth":2,"path":"analysis/streamer.md","ref":"analysis/streamer.md","articles":[]},"previous":{"title":"Offline analysis database","level":"1.4.7","depth":2,"path":"analysis/oadb.md","ref":"analysis/oadb.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/trouble.md","mtime":"2020-09-29T14:25:36.196Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Step 2 - Running the task · ALICE Analysis Tutorial</title>
+        <title>AliMonitor · ALICE Analysis Tutorial</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -65,10 +65,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="modify.html" />
+    <link rel="next" href="oadb.html" />
     
     
-    <link rel="prev" href="setup.html" />
+    <link rel="prev" href="lego.html" />
     
 
     </head>
@@ -363,7 +363,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.6" data-path="monalisa.html">
+        <li class="chapter active" data-level="1.4.6" data-path="monalisa.html">
             
                 <a href="monalisa.html">
             
@@ -460,7 +460,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.5.2" data-path="running.html">
+        <li class="chapter " data-level="1.5.2" data-path="running.html">
             
                 <a href="running.html">
             
@@ -761,7 +761,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Step 2 - Running the task</a>
+        <a href=".." >AliMonitor</a>
     </h1>
 </div>
 
@@ -776,47 +776,51 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="step-2---running-the-task">Step 2 - Running the task</h1>
-<p>It is now time to run this simple analysis. To run the task, make sure that the ALICE environment is (still) sourced, and type</p>
-<pre><code>$ aliroot runAnalysis.C
-</code></pre><p>in the folder where you have stored the analysis code. This command launches aliroot (the ALICE extension of the ROOT data analysis framework), and executes the macro &#x2019;runAnalysis.C&#x2019;. The macro will</p>
+                                <h1 id="monalisa---the-alice-grid-monitoring-toolset">MonALISA - the ALICE Grid monitoring toolset</h1>
+<p>ALICE uses MonALISA (Monitoring Agents using a Large Integrated Services Architecture) for monitoring and control of its Gird operations. The AliMonitor webpage, that we have seen in previous sections, provides us with access to the MonALISA services. In this section, we will cover some of these services. </p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(292528013);" id="vo-registration"><i class="fa fa-info-circle"></i> VO registration<span id="heading-292528013"></span></h3></div><div class="panel-body" id="panel-292528013"><p>For full access to all MonALISA serivces, make sure that you have a valid  certificate and ALICE VO registration!</p>
+</div></div></p>
+<h2 id="run-numbers">Run numbers</h2>
+<p>In the previous section, we have seen that data that are stored are identified by their run number. If you want to look up which run numbers correspond to a given data taking period, go to ALIMONITOR and click on the tab &apos;Run Condition Table&apos; (RCT). </p>
+<p><img src="figures/c2.png" alt="image"></p>
+<p>A large table is shown - you can select a data taking period from the drop down menu at the top left corner of the table. As soon as you select a data taking period, the corresponding list of run numbers is displayed in the table. </p>
+<p><img src="figures/b2.png" alt="image"></p>
+<p>To ensure that detector systems that you need to use in your analysis were functioning properly, you can check quality flags for all detector subsystems in the columns on the right-hand side of the table. The number &apos;1&apos; means that data taking was successful; to only display run numbers for which data quality is guaranteed for a given sub detector, type a &apos;1&apos; in the field of the first row of the table that corresponds to said detector (see the circle on the top right of the above picture). </p>
+<p>If you scroll down, to the bottom of the table, you will see a button labeled: &apos;Show list of runs&apos;. Clicking this button will open a pop-up window which lists the run numbers that are displayed in the table as a list of comma separated numbers. You can now easily copy these numbers into your steering macro, and add these run numbers to the analysis plugin. </p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(843788602);" id="which-data-format-to-take"><i class="fa fa-info-circle"></i> Which data format to take?<span id="heading-843788602"></span></h3></div><div class="panel-body" id="panel-843788602"><p>You might note that, for all runs, data is stored in two distinct formats</p>
 <ul>
-<li><p>compile your analysis code</p>
-</li>
-<li><p>add your analysis task to the analysis manager</p>
-</li>
-<li><p>run the analysis over the input data file that you have provided</p>
-</li>
+<li><strong>AliESDs.root</strong>: event summary data</li>
+<li><strong>AliAOD.root</strong>: analysis object data
+in various <strong>passes</strong>. </li>
 </ul>
-<p>As the code starts running, the analysis manager prints some information to your screen, e.g.</p>
-<pre><code>______________________________________________________________________________
-   task: name  ACTIVE=0 POST_LOOP=0
-      INPUT #0: TChain &lt;-  [cAUTO_INPUT]
-      OUTPUT #0: TTree -&gt;  [NO CONTAINER]
-      OUTPUT #1: TList -&gt;  [MyOutputContainer]
-      Container: MyOutputContainer     DATA TYPE: TList
-       = Filename: AnalysisResults.root  folder: MyTask
-I-AliAnalysisManager::SetUseProgressBar: Progress bar enabled, updated every 25 events.
-  ### NOTE: Debug level reset to 0 ###
-(class TClass*)0x37637e0
-===== RUNNING LOCAL ANALYSIS AnalysisTaskExample ON TREE aodTree
-(class TClass*)0x37637e0
-Initialization time: 2.69299 [sec]
-E-AliAnalysisManager::GetRunFromAlienPath: Invalid AliEn path string
-I-AliAODInputHandler::Notify: Moving to file AliAOD.root
-Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
-</code></pre><p>This information is useful: you can see what kind of input and output your job is digesting - and, when something is wrong, you will get detailed information on <em>what</em> is going wrong.  </p>
-<h2 id="caveats">Caveats</h2>
-<p>Make sure though, that the macro &#x2019;knows&#x2019; where you stored the AliAOD.root file on your laptop (if the AliAOD.root file is in a different folder than the analysis source code, open the runAnalysis.C file, and change the lines where the input file is accessed, just search for <em>AliAOD.root</em> ).</p>
-<p>By default, the macro will run the task just on your laptop. Later on, we&#x2019;ll see how you can run your analysis on Grid.</p>
-<p>There are some difference between interaction with ROOT5 and ROOT6; a quick ROOT5 to ROOT6 guide <a href="https://alice-doc.github.io/alice-analysis-tutorial/analysis/ROOT5-to-6.html" target="_blank">can be found here</a>.</p>
-<h1 id="take-a-look-at-the-output">Take a look at the output</h1>
-<p>If all goes well, your simple task runs over the input data, and fills one histogram with the distribution of transverse momentum of all charged particle tracks in all events. </p>
-<p>Once the task is done running, take a look at the outputfile </p>
-<pre><code>AnalysisResults.root
-</code></pre><p> that your analysis has generated. The easiest way to do so is to open a TBrowser (ROOT&#x2019;s &#x2019;graphical user interface&#x2019;) while you are in (ali)root </p>
-<pre><code>new TBrowser
-</code></pre><p>and take a look at the distribution in the histogram. No idea how to use a TBrowser, or what a TBrowser even is? Don&#x2019;t hesitate to ask, and take a look at the <a href="https://root.cern.ch/root/htmldoc/guides/users-guide/ROOTUsersGuide.html" target="_blank">ROOT user&#x2019;s guide</a>.</p>
+<p><strong>ESD</strong> files contain <strong>full</strong> information about events, AOD files contain a subset of information that has been selected for physics analysis. </p>
+<ul>
+<li>unless otherwise specified, use is <strong>discouraged</strong> as data are very
+large</li>
+<li><strong>AOD</strong> files contain information necessary for <strong>physics analysis</strong> and is the preferred format</li>
+<li>AOD files contain <strong>pre filtered</strong> collections of tracks, to be selected via their
+filterbit. <em>Always</em> apply a filterbit selection when running on AODs, to avoid double counting of tracks!</li>
+</ul>
+<p>When multiple <strong>passes</strong> are available for a data set, this means that the data has been reconstructed more than once, with slightly different approaches. As a rule-of-thumb: take the <strong>latest</strong> pass, but discuss this within your working group!</p>
+</div></div></p>
+<h2 id="available-packages">Available packages</h2>
+<p>The AliMonitor webpage can be used to check which software packages are accessible on the Grid nodes. In the menu on the left-hand side of the page, click on &apos;Job information&apos;, then on &apos;User views&apos;, then on &apos;Grid packages&apos;. A large table will load, if the CVMFS status is listed as &apos;available&apos;, a certain software package is available on Grid. If it&apos;s listed as n/a, it is (probably) archived, and <em>cannot</em> be selected for analysis. </p>
+<p>Keep in mind: when specifying a version of the software stack to be used, to <em>only</em>  call &#x2018;SetAliPhysicsVersion(&#x201C;..&#x201D;)&#x2019; in your steering macro. The right dependencies are automatically resolved. 
+<img src="figures/dada.png" alt="image">
+Daily tags (AN) of AliPhysics are a snapshot of all code that is in the central repository at 16h Geneva time. The daily tacks are usually available on Grid in about two hours after the tagging. </p>
+<h2 id="run-quota---how-many-jobs-can-you-run">Run quota - how many jobs can you run?</h2>
+<p>We have to share computing resources, so the number of jobs that you can run is not infinite. To check your quotas, which limit both how many jobs you can run, how much CPU hours they can consume, and how much diskspace your output files take up, click at the menu on the left-hand side of the AliMonotir page on &apos;Job information&apos;, then on &apos;User views&apos; and then on &apos;Quotas. </p>
+<p><img src="figures/dadada.png" alt="image"></p>
+<p>You will see the five job activity quantifiers that apply for all users</p>
+<ul>
+<li>the number of files that you have currently stored</li>
+<li>the disk space that the files take up</li>
+<li>the number of unfinished jobs that you have in the job queue</li>
+<li>the running time of your jobs, integrated over the last 24 hours</li>
+<li>the CPU cost of your jobs, integrated over the last 24 hours</li>
+</ul>
+<p>If you are over (one of the) quota, i.e. one of the bars is completely red, you cannot submit jobs. In case of being over the file quota, you have to remove files from your alien space. Job quota just require a bit of waiting. </p>
+<p>Be patient, when you are over your quota. Not all quota are refreshed instantaneously, it can sometimes take up to 12 hours before your quota are refreshed. </p>
 
                                 
                                 </section>
@@ -844,12 +848,12 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
 
             
                 
-                <a href="setup.html" class="navigation navigation-prev " aria-label="Previous page: Step 1 - Setup the tutorial">
+                <a href="lego.html" class="navigation navigation-prev " aria-label="Previous page: The LEGO train system">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="modify.html" class="navigation navigation-next " aria-label="Next page: Step 3 - Modify the task">
+                <a href="oadb.html" class="navigation navigation-next " aria-label="Next page: Offline analysis database">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -860,7 +864,7 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Step 2 - Running the task","level":"1.5.2","depth":2,"next":{"title":"Step 3 - Modify the task","level":"1.5.3","depth":2,"path":"analysis/modify.md","ref":"analysis/modify.md","articles":[]},"previous":{"title":"Step 1 - Setup the tutorial","level":"1.5.1","depth":2,"path":"analysis/setup.md","ref":"analysis/setup.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/running.md","mtime":"2020-09-29T14:25:36.192Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"AliMonitor","level":"1.4.6","depth":2,"next":{"title":"Offline analysis database","level":"1.4.7","depth":2,"path":"analysis/oadb.md","ref":"analysis/oadb.md","articles":[]},"previous":{"title":"The LEGO train system","level":"1.4.5","depth":2,"path":"analysis/lego.md","ref":"analysis/lego.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/monalisa.md","mtime":"2020-09-29T14:25:36.192Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>

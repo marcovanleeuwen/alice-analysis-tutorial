@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Step 2 - Running the task · ALICE Analysis Tutorial</title>
+        <title>AliAnalysisTaskSE · ALICE Analysis Tutorial</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -65,10 +65,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="modify.html" />
+    <link rel="next" href="alianalysistaskmytask.html" />
     
     
-    <link rel="prev" href="setup.html" />
+    <link rel="prev" href="welcome.html" />
     
 
     </head>
@@ -298,7 +298,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.4.1" data-path="classes.html">
+        <li class="chapter active" data-level="1.4.1" data-path="classes.html">
             
                 <a href="classes.html">
             
@@ -460,7 +460,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.5.2" data-path="running.html">
+        <li class="chapter " data-level="1.5.2" data-path="running.html">
             
                 <a href="running.html">
             
@@ -761,7 +761,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Step 2 - Running the task</a>
+        <a href=".." >AliAnalysisTaskSE</a>
     </h1>
 </div>
 
@@ -776,47 +776,98 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="step-2---running-the-task">Step 2 - Running the task</h1>
-<p>It is now time to run this simple analysis. To run the task, make sure that the ALICE environment is (still) sourced, and type</p>
-<pre><code>$ aliroot runAnalysis.C
-</code></pre><p>in the folder where you have stored the analysis code. This command launches aliroot (the ALICE extension of the ROOT data analysis framework), and executes the macro &#x2019;runAnalysis.C&#x2019;. The macro will</p>
+                                <h1 id="introduction---c-classes">Introduction - C++ classes</h1>
+<p>All the code that you will find in ROOT, AliRoot and AliPhysics is written in the form of C++ <em>classes</em>. A class is a data type which is defined by the user, and allows for creating data members and functions specific for that class. By convention, each class in AliPhysics, AliRoot, and ROOT, is stored in its own <strong>header</strong> (.h) and <strong>implementation</strong> file, which have the same name as the class it defines (so later on, we will see that your analysis class, stored in a file &apos;AliAnalysisTaskMyTask&apos;, is called &apos;AliAnalysisTaskMyTask&apos;). </p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(8862607958);" id="c--"><i class="fa fa-info-circle"></i> C++ .... ?<span id="heading-8862607958"></span></h3></div><div class="panel-body" id="panel-8862607958"><p>If you have never heard of classes (or C++), it might be a good idea to go through a C++ manual, an excellent one, with plenty of hands-on examples, can be found here: <a href="http://www.cplusplus.com/doc/tutorial/" target="_blank">http://www.cplusplus.com/doc/tutorial/</a>. </p>
+</div></div></p>
+<p>Classes are extended structures which contain both <strong>variables</strong> and <strong>functions</strong> (which are called <strong>methods</strong>) as <strong>members</strong>. Often, variables must be <strong>accessed</strong> through these methods. This might sound a bit abstract, but it becomes much more clear when you look at in a small code example:</p>
+<pre><code class="lang-cpp">    <span class="hljs-keyword">class</span> Rectangle
+    {
+     <span class="hljs-keyword">private</span>:
+      <span class="hljs-keyword">int</span> width, height;
+     <span class="hljs-keyword">public</span>:
+      Rectangle(<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>);
+      <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">GetArea</span><span class="hljs-params">()</span> </span>{<span class="hljs-keyword">return</span> height * width;}
+    }
+</code></pre>
+<p>Here we defined a class, called <strong>Rectangle</strong>, which has variables <strong>width</strong> and <strong>height</strong>, and a <strong>method</strong> called <code>GetArea</code> which gives us access to the members. </p>
+<h3 id="inheritance">Inheritance</h3>
+<p>Classes are nice and important, because they can be <strong>derived</strong> from one-another (a feature called <strong>inheritance</strong>. Look at the figure below </p>
+<p><img src="figures/inheritance.png" alt="image"></p>
+<p>In this figure, <code>Rectangle</code> is <strong>derived</strong> from <strong>base</strong> class <code>Polygon</code>, and <em>inherits</em> its members. If we want to define a second class, <code>Triangle</code>, which is also a polygon and will therefore have features in common with <code>Rectangle</code>, we can also derive it from base class <code>Polygon</code>. This  avoids having to <strong>repeat</strong> common code for multiple which share features. </p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(1205669225);" id="beware"><i class="fa fa-info-circle"></i> Beware<span id="heading-1205669225"></span></h3></div><div class="panel-body" id="panel-1205669225"><p>Classes are very powerful, but inheritance can sometimes make it tricky to understand how code is structured!</p>
+</div></div></p>
+<p>Let&apos;s take a look at how our classes would look like when we put them down as C++ code. First, we define out base class, the polygon</p>
+<pre><code class="lang-cpp"><span class="hljs-keyword">class</span> Polygon
+{
+ <span class="hljs-keyword">private</span>:
+  <span class="hljs-keyword">int</span> width, height;
+}
+</code></pre>
+<p>This example lives in 2-dimensional space, so our polygon is fully defined by its width and its height. The two polygons that we want to define, are a rectangle and a triangle. The rectangle can be defined as follows</p>
+<pre><code class="lang-cpp">    <span class="hljs-keyword">class</span> Rectangle : <span class="hljs-keyword">public</span> Polygon
+    {
+     <span class="hljs-keyword">public</span>:
+      Rectangle(<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>);
+      <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">GetArea</span><span class="hljs-params">()</span> </span>{<span class="hljs-keyword">return</span> height * width;}
+    }
+</code></pre>
+<p>Note that we <strong>do not</strong> have to define the members <code>height</code> and <code>width</code> here, as they are already defined in our base class! The only <em>method</em> that is specific to the rectangle, is the <code>GetArea</code> method. </p>
+<p>Our triangle class can be written as</p>
+<pre><code class="lang-cpp">    <span class="hljs-keyword">class</span> Triangle : <span class="hljs-keyword">public</span> Polygon
+    {
+     <span class="hljs-keyword">public</span>:
+      Triangle(<span class="hljs-keyword">int</span>,<span class="hljs-keyword">int</span>);
+      <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">GetArea</span><span class="hljs-params">()</span> </span>{<span class="hljs-keyword">return</span> (height * width)/<span class="hljs-number">2</span>;}
+    }
+</code></pre>
+<p>Again, <code>width</code> and <code>height</code> are defined in the base class <code>Polygon</code>, but also the Triangle class gets its own <code>GetArea</code> method. So now we have seen how <strong>inheritance</strong> makes our classes (and our life) simpler: by defining common functionality in a base class, we avoid <em>repetition</em> of code, which could easily lead to mistakes.</p>
+<p><div class="panel panel-success"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(4936302315);" id="example-from-aliphysics---the-alimcevent-class"><i class="fa fa-square-o"></i> Example from AliPhysics - The AliMCEvent class<span id="heading-4936302315"></span></h3></div><div class="panel-body" id="panel-4936302315"><p>Inheritance is used widely in C++ code, and therefore also in AliROOT and AliPhysics. Take a look at the <code>AliMCEvent</code> class below</p>
+<pre><code class="lang-cpp">    <span class="hljs-keyword">class</span> AliMCEvent : <span class="hljs-keyword">public</span> AliVEvent {
+      <span class="hljs-keyword">public</span>:
+      ....
+      <span class="hljs-keyword">private</span>:
+      ....
+    }
+</code></pre>
+<p>Here <code>AliMCEvent</code> is derived from its base class <code>AliVEvent</code>, in the same way as the <code>Triangle</code> is derived from the base class <code>Polygon</code>. Classes such as <code>AliESDEvent</code> and <code>AliAODEvent</code> are also derived from <code>AliVEvent</code>, preventing a lot of <em>boilerplate</em> (i.e. needlessly repetitive) code.</p>
+</div></div></p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(4643378361);" id="class-headers---"><i class="fa fa-info-circle"></i> Class headers ... ? <span id="heading-4643378361"></span></h3></div><div class="panel-body" id="panel-4643378361"><p>C++ classes are, in code bases, usually split into a <em>header</em> file (extention .h) and an implementation file (extension .cxx). A header file is generally used to define all of the functions, variables and constants contained in a class. There are multiple good reasons for splitting code into an implementation and a header - can you think of a few? </p>
+</div></div></p>
+<h1 id="alianalysistaskse">AliAnalysisTaskSE</h1>
+<p>Now that you are an expert at C++ classes, you might wonder why classes are relevant to writing an analysis task. The reason is the following: in the AliPhysics analysis framework, <strong>all analysis tasks are derived from the same base class, called <code>AliAnalysisTaskSE</code></strong>, where SE stands for &apos;single event&apos;. This class in turn, is derived from the class <code>AliAnalysisTask</code> (if you are interested, you can go through the code and follow the full chain of inheritance). </p>
+<p>Since all analysis tasks derive from <code>AliAnalysisTaskSE</code>, all analyses share the following common, base methods:</p>
+<pre><code class="lang-cpp">        AliAnalysisTaskSE::AliAnalysisTaskSE();
+        AliAnalysisTaskSE::AliAnalysisTaskSE(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>*);
+        AliAnalysisTaskSE::~AliAnalysisTaskSE();
+        AliAnalysisTaskSE::UserCreateOutputObjects();
+        AliAnalysisTaskSE::UserExec(Option_t*);
+        AliAnalysisTaskSE::Terminate(Option_t*);
+</code></pre>
+<p>These are methods that you will always need to implement. </p>
+<p>In the following section, we will go through these methods in detail.</p>
+<h2 id="class-constructors-and-destructors">Class constructors and destructors</h2>
+<p>The functions</p>
+<pre><code class="lang-cpp">        AliAnalysisTaskSE::AliAnalysisTaskSE();                 <span class="hljs-comment">// class constructor</span>
+        AliAnalysisTaskSE::AliAnalysisTaskSE(<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>*);      <span class="hljs-comment">// class constructor</span>
+        AliAnalysisTaskSE::~AliAnalysisTaskSE();                <span class="hljs-comment">// class destructor</span>
+</code></pre>
+<p>are your class <strong>constructors</strong> and <strong>destructor</strong>. These are standard C++ features, that are called when you create or delete an instance of your class. We will later on see, why you need to define <em>two</em> different class constructors. </p>
+<h2 id="alianalysistaskseusercreateoutputobjects">AliAnalysisTaskSE::UserCreateOutputObjects()</h2>
+<p>In this function, the user (i.e. the analyzer) can define the output objects of the analysis. These are e.g. histograms in which you store your physics results. These output objects can be attached to the output file(s) of the analysis. </p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(8744123984);" id="please-note"><i class="fa fa-info-circle"></i> Please note<span id="heading-8744123984"></span></h3></div><div class="panel-body" id="panel-8744123984"><p>When you are designing your class for your analysis, it (obviously) pays off to think about which output you need to extract the physics; do you want ten 1D histograms, or will four 2D histograms supply much more information? Or would you prefer writing certain information to a TTree, such that you have full information available when post-processing on your laptop? All these different output objects bring memory and size considerations, so choose well.</p>
+</div></div></p>
+<h2 id="alianalysistaskseuserexec">AliAnalysisTaskSE::UserExec()</h2>
+<p>This function is called <em>for each, single event</em> over which your analysis task runs. This function is your &apos;event loop&apos;. Examples of useful things to do in the UserExec() function:</p>
 <ul>
-<li><p>compile your analysis code</p>
-</li>
-<li><p>add your analysis task to the analysis manager</p>
-</li>
-<li><p>run the analysis over the input data file that you have provided</p>
-</li>
+<li>Check if an event has properties that you want to have in your analysis, if not <code>return;</code></li>
+<li>Access the physics objects specific to your analysis (e.g. the charged particles in this event, or find the highest momentum particle)</li>
+<li>Fill the histograms or other output objects</li>
 </ul>
-<p>As the code starts running, the analysis manager prints some information to your screen, e.g.</p>
-<pre><code>______________________________________________________________________________
-   task: name  ACTIVE=0 POST_LOOP=0
-      INPUT #0: TChain &lt;-  [cAUTO_INPUT]
-      OUTPUT #0: TTree -&gt;  [NO CONTAINER]
-      OUTPUT #1: TList -&gt;  [MyOutputContainer]
-      Container: MyOutputContainer     DATA TYPE: TList
-       = Filename: AnalysisResults.root  folder: MyTask
-I-AliAnalysisManager::SetUseProgressBar: Progress bar enabled, updated every 25 events.
-  ### NOTE: Debug level reset to 0 ###
-(class TClass*)0x37637e0
-===== RUNNING LOCAL ANALYSIS AnalysisTaskExample ON TREE aodTree
-(class TClass*)0x37637e0
-Initialization time: 2.69299 [sec]
-E-AliAnalysisManager::GetRunFromAlienPath: Invalid AliEn path string
-I-AliAODInputHandler::Notify: Moving to file AliAOD.root
-Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
-</code></pre><p>This information is useful: you can see what kind of input and output your job is digesting - and, when something is wrong, you will get detailed information on <em>what</em> is going wrong.  </p>
-<h2 id="caveats">Caveats</h2>
-<p>Make sure though, that the macro &#x2019;knows&#x2019; where you stored the AliAOD.root file on your laptop (if the AliAOD.root file is in a different folder than the analysis source code, open the runAnalysis.C file, and change the lines where the input file is accessed, just search for <em>AliAOD.root</em> ).</p>
-<p>By default, the macro will run the task just on your laptop. Later on, we&#x2019;ll see how you can run your analysis on Grid.</p>
-<p>There are some difference between interaction with ROOT5 and ROOT6; a quick ROOT5 to ROOT6 guide <a href="https://alice-doc.github.io/alice-analysis-tutorial/analysis/ROOT5-to-6.html" target="_blank">can be found here</a>.</p>
-<h1 id="take-a-look-at-the-output">Take a look at the output</h1>
-<p>If all goes well, your simple task runs over the input data, and fills one histogram with the distribution of transverse momentum of all charged particle tracks in all events. </p>
-<p>Once the task is done running, take a look at the outputfile </p>
-<pre><code>AnalysisResults.root
-</code></pre><p> that your analysis has generated. The easiest way to do so is to open a TBrowser (ROOT&#x2019;s &#x2019;graphical user interface&#x2019;) while you are in (ali)root </p>
-<pre><code>new TBrowser
-</code></pre><p>and take a look at the distribution in the histogram. No idea how to use a TBrowser, or what a TBrowser even is? Don&#x2019;t hesitate to ask, and take a look at the <a href="https://root.cern.ch/root/htmldoc/guides/users-guide/ROOTUsersGuide.html" target="_blank">ROOT user&#x2019;s guide</a>.</p>
+<p><div class="panel panel-primary"><div class="panel-heading"><h3 class="panel-title" onclick="javascript:toggle(3442900111);" id="please-note"><i class="fa fa-info-circle"></i> Please note<span id="heading-3442900111"></span></h3></div><div class="panel-body" id="panel-3442900111"><p>If the function <code>AliAnalysisTaskSE::SelectCollisionCandidates(UInt_t trigger_mask)</code> is called before you launch your analysis, <code>UserExec()</code> will only be executed for events which pass the trigger selection that you have specified. </p>
+</div></div></p>
+<h2 id="alianalysistaskseterminate">AliAnalysisTaskSE::Terminate()</h2>
+<p>The <code>Terminate</code> function is called at the very end of the analysis, when all events in your input data have been analyzed. Often, you leave the <code>Terminate</code> function empty: usually it is more practical to write a small macro that performs post-processing on your analysis output files, rather than deferring this functionality to the <code>Terminate</code> function.   </p>
 
                                 
                                 </section>
@@ -844,12 +895,12 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
 
             
                 
-                <a href="setup.html" class="navigation navigation-prev " aria-label="Previous page: Step 1 - Setup the tutorial">
+                <a href="welcome.html" class="navigation navigation-prev " aria-label="Previous page: Writing an analysis task">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="modify.html" class="navigation navigation-next " aria-label="Next page: Step 3 - Modify the task">
+                <a href="alianalysistaskmytask.html" class="navigation navigation-next " aria-label="Next page: Your analysis task">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -860,7 +911,7 @@ Proocessing event     [=====|    ]  525 [ 50.92 %]   TIME 00:00:08  ETA 00:00:08
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Step 2 - Running the task","level":"1.5.2","depth":2,"next":{"title":"Step 3 - Modify the task","level":"1.5.3","depth":2,"path":"analysis/modify.md","ref":"analysis/modify.md","articles":[]},"previous":{"title":"Step 1 - Setup the tutorial","level":"1.5.1","depth":2,"path":"analysis/setup.md","ref":"analysis/setup.md","articles":[]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/running.md","mtime":"2020-09-29T14:25:36.192Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"AliAnalysisTaskSE","level":"1.4.1","depth":2,"next":{"title":"Your analysis task","level":"1.4.2","depth":2,"path":"analysis/alianalysistaskmytask.md","ref":"analysis/alianalysistaskmytask.md","articles":[]},"previous":{"title":"Writing an analysis task","level":"1.4","depth":1,"path":"analysis/welcome.md","ref":"analysis/welcome.md","articles":[{"title":"AliAnalysisTaskSE","level":"1.4.1","depth":2,"path":"analysis/classes.md","ref":"analysis/classes.md","articles":[]},{"title":"Your analysis task","level":"1.4.2","depth":2,"path":"analysis/alianalysistaskmytask.md","ref":"analysis/alianalysistaskmytask.md","articles":[]},{"title":"Running locally","level":"1.4.3","depth":2,"path":"analysis/local.md","ref":"analysis/local.md","articles":[]},{"title":"Running on Grid","level":"1.4.4","depth":2,"path":"analysis/rungrid.md","ref":"analysis/rungrid.md","articles":[]},{"title":"The LEGO train system","level":"1.4.5","depth":2,"path":"analysis/lego.md","ref":"analysis/lego.md","articles":[]},{"title":"AliMonitor","level":"1.4.6","depth":2,"path":"analysis/monalisa.md","ref":"analysis/monalisa.md","articles":[]},{"title":"Offline analysis database","level":"1.4.7","depth":2,"path":"analysis/oadb.md","ref":"analysis/oadb.md","articles":[]},{"title":"Troubleshooting","level":"1.4.8","depth":2,"path":"analysis/trouble.md","ref":"analysis/trouble.md","articles":[]},{"title":"The ROOT streamer","level":"1.4.9","depth":2,"path":"analysis/streamer.md","ref":"analysis/streamer.md","articles":[]},{"title":"Destructors","level":"1.4.10","depth":2,"path":"analysis/destructor.md","ref":"analysis/destructor.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["katex","panels@git+https://github.com/lhcb/gitbook-plugin-panels.git#117012fdc18c96831cb88196980c0ea73b0c87b8","collapsible-menu","block-align","page-toc"],"styles":{"website":"css/website.css"},"pluginsConfig":{"collapsible-menu":{},"block-align":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"panels":{},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"ALICE Analysis Tutorial","gitbook":"*","description":"Introduction to the common analysis techniques and tools of ALICE"},"file":{"path":"analysis/classes.md","mtime":"2020-09-29T14:25:36.176Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-29T14:26:34.441Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
